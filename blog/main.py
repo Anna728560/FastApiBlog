@@ -7,6 +7,8 @@ from sqlalchemy.orm import Session
 from blog import models, schemas
 from blog.database import engine, SessionLocal
 
+from blog.hashing import Hash
+
 
 app = FastAPI()
 
@@ -67,7 +69,8 @@ def destroy_blog(blog_id: int, db: Session = Depends(get_db)):
 
 @app.post("/user/", status_code=status.HTTP_201_CREATED)
 def create_user(user: schemas.User, db: Session = Depends(get_db)):
-    db_user = models.User(name=user.name, email=user.email)
+    hashed_password = Hash.bcrypt_hash(user.password)
+    db_user = models.User(name=user.name, email=user.email, password=hashed_password)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
