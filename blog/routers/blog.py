@@ -8,7 +8,6 @@ from blog.authentication import oauth2
 from blog.crud import blog_crud
 from blog.schemas import blog_schemas, user_schemas
 
-
 router = APIRouter(
     tags=["Blogs"],
     prefix="/blogs"
@@ -19,7 +18,11 @@ router = APIRouter(
     "/",
     status_code=status.HTTP_201_CREATED,
 )
-def create_blog(request: blog_schemas.Blog, db: Session = Depends(database.get_db)):
+def create_blog(
+        request: blog_schemas.Blog,
+        db: Session = Depends(database.get_db),
+        current_user: user_schemas.User = Depends(oauth2.get_current_user)
+):
     return blog_crud.create_new_blog(request, db)
 
 
@@ -27,10 +30,7 @@ def create_blog(request: blog_schemas.Blog, db: Session = Depends(database.get_d
     "/",
     response_model=List[blog_schemas.ShowBlog],
 )
-def get_all(
-        db: Session = Depends(database.get_db),
-        current_user: user_schemas.User = Depends(oauth2.get_current_user)
-):
+def get_all(db: Session = Depends(database.get_db)):
     return blog_crud.get_all_blogs(db)
 
 
@@ -47,7 +47,12 @@ def get_one(blog_id: int, db: Session = Depends(database.get_db)):
     "/{id}/",
     status_code=status.HTTP_202_ACCEPTED,
 )
-def update_blog(blog_id: int, blog: blog_schemas.Blog, db: Session = Depends(database.get_db)):
+def update_blog(
+        blog_id: int,
+        blog: blog_schemas.Blog,
+        db: Session = Depends(database.get_db),
+        current_user: user_schemas.User = Depends(oauth2.get_current_user),
+):
     return blog_crud.update_blog_by_id(blog_id, blog, db)
 
 
@@ -55,5 +60,9 @@ def update_blog(blog_id: int, blog: blog_schemas.Blog, db: Session = Depends(dat
     "/{id}/",
     status_code=status.HTTP_204_NO_CONTENT,
 )
-def destroy_blog(blog_id: int, db: Session = Depends(database.get_db)):
+def destroy_blog(
+        blog_id: int,
+        db: Session = Depends(database.get_db),
+        current_user: user_schemas.User = Depends(oauth2.get_current_user)
+):
     return blog_crud.delete_blog_by_id(blog_id, db)
