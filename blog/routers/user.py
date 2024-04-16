@@ -1,10 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
 
 from sqlalchemy.orm import Session
 
-from blog import schemas, models, database
-from blog.hashing import Hash
-
+from blog import schemas, database
+from blog.crud import user_crud
 
 router = APIRouter(
     tags=["Users"],
@@ -17,13 +16,8 @@ router = APIRouter(
     status_code=status.HTTP_201_CREATED,
     response_model=schemas.ShowUser,
 )
-def create_user(user: schemas.User, db: Session = Depends(database.get_db)):
-    hashed_password = Hash.bcrypt_hash(user.password)
-    db_user = models.User(name=user.name, email=user.email, password=hashed_password)
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
-    return db_user
+def create_user(request: schemas.User, db: Session = Depends(database.get_db)):
+    return user_crud.create_new_user(request, db)
 
 
 @router.get(
@@ -31,11 +25,4 @@ def create_user(user: schemas.User, db: Session = Depends(database.get_db)):
     response_model=schemas.ShowUser,
 )
 def get_user(user_id: int, db: Session = Depends(database.get_db)):
-    db_user = db.query(models.User).filter(models.User.id == user_id).first()
-    if db_user:
-        return db_user
-
-    raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND,
-        detail=f"User with the id {user_id} is not found"
-    )
+    return user_crud.get_user_by_id(user_id, db)
