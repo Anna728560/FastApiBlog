@@ -43,3 +43,14 @@ def get_one(blog_id: int, db: Session = Depends(get_db)):
         status_code=status.HTTP_404_NOT_FOUND,
         detail=f"Blog with the id {blog_id} is not found"
     )
+
+
+@app.delete("/blog/{id}/", status_code=status.HTTP_204_NO_CONTENT)
+def destroy_blog(blog_id: int, db: Session = Depends(get_db)):
+    db.query(models.Blog).filter(models.Blog.id == blog_id).delete(
+        synchronize_session=False
+    )
+    db.commit()
+    return "done"
+
+
