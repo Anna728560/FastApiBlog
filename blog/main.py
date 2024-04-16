@@ -29,7 +29,7 @@ def get_db() -> Session:
     tags=["blogs"],
 )
 def create_blog(blog: schemas.Blog, db: Session = Depends(get_db)):
-    new_blog = models.Blog(title=blog.title, body=blog.body)
+    new_blog = models.Blog(title=blog.title, body=blog.body, user_id=blog.user_id)
     db.add(new_blog)
     db.commit()
     db.refresh(new_blog)
