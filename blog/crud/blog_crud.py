@@ -1,7 +1,8 @@
 from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from blog import models, database, schemas
+from blog import models, database
+from blog.schemas import blog_schemas
 
 
 def get_all_blogs(db: Session = Depends(database.get_db)):
@@ -9,7 +10,7 @@ def get_all_blogs(db: Session = Depends(database.get_db)):
     return blogs
 
 
-def create_new_blog(blog: schemas.Blog, db: Session = Depends(database.get_db)):
+def create_new_blog(blog: blog_schemas.Blog, db: Session = Depends(database.get_db)):
     db_blog = models.Blog(title=blog.title, body=blog.body, user_id=blog.user_id)
     db.add(db_blog)
     db.commit()
@@ -28,7 +29,7 @@ def get_blog_by_id(blog_id: int, db: Session = Depends(database.get_db)):
     )
 
 
-def update_blog_by_id(blog_id: int, blog: schemas.Blog, db: Session = Depends(database.get_db)):
+def update_blog_by_id(blog_id: int, blog: blog_schemas.Blog, db: Session = Depends(database.get_db)):
     db_blog = get_blog_by_id(blog_id=blog_id, db=db)
     for attr, value in blog.dict().items():
         setattr(db_blog, attr, value)

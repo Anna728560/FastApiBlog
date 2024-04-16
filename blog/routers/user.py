@@ -2,8 +2,9 @@ from fastapi import APIRouter, Depends, status
 
 from sqlalchemy.orm import Session
 
-from blog import schemas, database
+from blog.schemas import blog_schemas, user_schemas
 from blog.crud import user_crud
+from blog import database
 
 router = APIRouter(
     tags=["Users"],
@@ -14,15 +15,15 @@ router = APIRouter(
 @router.post(
     "/",
     status_code=status.HTTP_201_CREATED,
-    response_model=schemas.ShowUser,
+    response_model=blog_schemas.ShowUser,
 )
-def create_user(request: schemas.User, db: Session = Depends(database.get_db)):
+def create_user(request: user_schemas.User, db: Session = Depends(database.get_db)):
     return user_crud.create_new_user(request, db)
 
 
 @router.get(
     "/{id}/",
-    response_model=schemas.ShowUser,
+    response_model=blog_schemas.ShowUser,
 )
 def get_user(user_id: int, db: Session = Depends(database.get_db)):
     return user_crud.get_user_by_id(user_id, db)

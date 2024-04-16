@@ -2,7 +2,7 @@ from datetime import datetime, timezone, timedelta
 
 from jose import jwt, JWTError
 
-from blog import schemas
+from blog.schemas import authentication_schemas
 
 
 SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
@@ -24,6 +24,6 @@ def verify_token(token: str, credentials_exception):
         email: str = payload.get("sub")
         if email is None:
             raise credentials_exception
-        token_data = schemas.TokenData(email=email)
+        token_data = authentication_schemas.TokenData(email=email)
     except JWTError:
         raise credentials_exception
