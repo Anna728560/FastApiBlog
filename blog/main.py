@@ -67,7 +67,7 @@ def destroy_blog(blog_id: int, db: Session = Depends(get_db)):
     return "done"
 
 
-@app.post("/user/", status_code=status.HTTP_201_CREATED)
+@app.post("/user/", status_code=status.HTTP_201_CREATED, response_model=schemas.ShowUser)
 def create_user(user: schemas.User, db: Session = Depends(get_db)):
     hashed_password = Hash.bcrypt_hash(user.password)
     db_user = models.User(name=user.name, email=user.email, password=hashed_password)
