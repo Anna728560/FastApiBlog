@@ -1,4 +1,5 @@
-from fastapi import FastAPI, Depends, status, Response, HTTPException
+from fastapi import FastAPI, Depends, status, HTTPException
+
 from sqlalchemy.orm import Session
 
 from blog import models, schemas
@@ -45,13 +46,13 @@ def get_one(blog_id: int, db: Session = Depends(get_db)):
     )
 
 
-@app.put("/blog/{id}", status_code=status.HTTP_202_ACCEPTED)
+@app.put("/blog/{id}/", status_code=status.HTTP_202_ACCEPTED)
 def update_blog(blog_id: int, blog: schemas.Blog, db: Session = Depends(get_db)):
     db_blog = get_one(blog_id=blog_id, db=db)
     for attr, value in blog.dict().items():
         setattr(db_blog, attr, value)
     db.commit()
-    return db_blog
+    return "Updated Blog"
 
 
 @app.delete("/blog/{id}/", status_code=status.HTTP_204_NO_CONTENT)
@@ -60,5 +61,3 @@ def destroy_blog(blog_id: int, db: Session = Depends(get_db)):
     db.delete(db_blog)
     db.commit()
     return "done"
-
-
