@@ -75,3 +75,15 @@ def create_user(user: schemas.User, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(db_user)
     return db_user
+
+
+@app.get("/user/{id}/", response_model=schemas.ShowUser)
+def get_user(user_id: int, db: Session = Depends(get_db)):
+    db_user = db.query(models.User).filter(models.User.id == user_id).first()
+    if db_user:
+        return db_user
+
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail=f"User with the id {user_id} is not found"
+    )
