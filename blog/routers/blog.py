@@ -3,7 +3,7 @@ from typing import List
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
-from blog import schemas, database
+from blog import schemas, database, oauth2
 from blog.crud import blog_crud
 
 
@@ -25,7 +25,10 @@ def create_blog(request: schemas.Blog, db: Session = Depends(database.get_db)):
     "/",
     response_model=List[schemas.ShowBlog],
 )
-def get_all(db: Session = Depends(database.get_db)):
+def get_all(
+        db: Session = Depends(database.get_db),
+        current_user: schemas.User = Depends(oauth2.get_current_user)
+):
     return blog_crud.get_all_blogs(db)
 
 

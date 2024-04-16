@@ -36,7 +36,7 @@ class ShowUser(BaseModel):
 
 
 class Login(BaseModel):
-    email: str
+    username: str
     password: str
 
 

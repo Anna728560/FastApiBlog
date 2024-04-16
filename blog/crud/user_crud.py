@@ -5,9 +5,16 @@ from blog import schemas, database, models
 from blog.hashing import Hash
 
 
-def create_new_user(request: schemas.User, db: Session = Depends(database.get_db)):
+def create_new_user(
+        request: schemas.User,
+        db: Session = Depends(database.get_db)
+):
     hashed_password = Hash.bcrypt_hash(request.password)
-    db_user = models.User(name=request.name, email=request.email, password=hashed_password)
+    db_user = models.User(
+        name=request.name,
+        email=request.email,
+        password=hashed_password
+    )
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
